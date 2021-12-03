@@ -1,4 +1,4 @@
-use eframe::egui::{CtxRef, TextStyle};
+use eframe::egui::{CtxRef, FontFamily, TextStyle};
 use eframe::epi::Frame;
 use crate::screen::*;
 use crate::character::*;
@@ -71,10 +71,22 @@ impl NoviceGenScreen {
 impl Screen for NoviceGenScreen {
     fn update(&mut self, ctx: &CtxRef, frame: &mut Frame<'_>) -> ScreenResult {
 
+        // let mut f = egui::FontDefinitions::default();
+        // f.family_and_size.insert(
+        //     TextStyle::Button,
+        //     (FontFamily::Proportional, 32.0)
+        // );
+        // f.family_and_size.insert(
+        //     TextStyle::Heading,
+        //     (FontFamily::Proportional, 48.0)
+        // );
+        // ctx.set_fonts(f);
+
         egui::CentralPanel::default().show(ctx, |ui| {
 
 
            ui.add(egui::Label::new(self.question.question.as_str()).text_style(TextStyle::Heading));
+            ui.separator();
 
             for a in &self.question.answers {
                 match a {
