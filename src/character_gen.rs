@@ -6,12 +6,54 @@ use eframe::egui;
 
 enum SimpleQuestionAnswer {
     NewQuestion(String, Box<SimpleQuestion>),
-    Result(String)
+    Result(String, Character)
 }
 
 pub struct SimpleQuestion {
     question : String,
     answers : Vec<SimpleQuestionAnswer>
+}
+
+pub struct GenerationTypeScreen {
+
+}
+
+pub struct NoviceGenScreen {
+    question : SimpleQuestion
+}
+
+pub struct ClassShowScreen {
+    character : Character
+}
+
+impl ClassShowScreen {
+    pub fn new(character : Character) -> Self {
+        Self {
+            character
+        }
+    }
+}
+
+impl Screen for ClassShowScreen {
+    
+    fn update(&mut self, ctx: &CtxRef, frame: &mut Frame<'_>) -> ScreenResult {
+
+        let mut res = ScreenResult::Ok;
+
+        egui::CentralPanel::default().show(ctx, |ui| {
+            ui.vertical_centered(|ui| {
+                ui.separator();
+                ui.label(format!("Вы {:?}", Character::get_class_name(&self.character)));
+
+                ui.separator();
+                if ui.button("Далее").clicked() {
+
+                }
+            });
+        });
+
+        res
+    }
 }
 
 impl SimpleQuestion {
@@ -26,9 +68,10 @@ impl SimpleQuestion {
                         Box::new(SimpleQuestion::clone(q)))
                     );
                 }
-                SimpleQuestionAnswer::Result(s) => {
+                SimpleQuestionAnswer::Result(s, ch) => {
                     answers.push(SimpleQuestionAnswer::Result(
-                        String::from(s.as_str())
+                        String::from(s.as_str()),
+                        ch.clone()
                     ));
                 }
             }
@@ -41,19 +84,9 @@ impl SimpleQuestion {
     }
 }
 
-pub struct GenerationTypeScreen {
-
-}
-
-pub struct NoviceGenScreen {
-    character : Character,
-    question : SimpleQuestion
-}
-
 impl NoviceGenScreen {
     pub fn new() -> Self {
         Self {
-            character : Character::new(),
             question : SimpleQuestion::new()
         }
     }
@@ -92,25 +125,25 @@ impl NoviceGenScreen {
 
         root.question = String::from("Ваш персонаж черпает магическую силу из?");
 
-        root.answers.push(SimpleQuestionAnswer::NewQuestion(
+        root.answers.push(SimpleQuestionAnswer::Result(
             String::from("Глубоких знаний, полученных в академии"),
-            Box::new(NoviceGenScreen::hide_question())
+            Character::new_from_class(CharacterClass::Wizard)
         ));
 
-        root.answers.push(SimpleQuestionAnswer::NewQuestion(
+        root.answers.push(SimpleQuestionAnswer::Result(
             String::from("От темной сущности, что даровала мне силы"),
-            Box::new(NoviceGenScreen::hide_question())
+            Character::new_from_class(CharacterClass::Warlok)
         ));
 
-        root.answers.push(SimpleQuestionAnswer::NewQuestion(
+        root.answers.push(SimpleQuestionAnswer::Result(
             String::from("От природных сил разлитых вокруг"),
-            Box::new(NoviceGenScreen::hide_question())
+            Character::new_from_class(CharacterClass::Sorcerer)
         ));
 
 
-        root.answers.push(SimpleQuestionAnswer::NewQuestion(
+        root.answers.push(SimpleQuestionAnswer::Result(
             String::from("Глубоких знаний, полученных в магической консерватории"),
-            Box::new(NoviceGenScreen::hide_question())
+            Character::new_from_class(CharacterClass::Bard)
         ));
 
         root
@@ -142,11 +175,19 @@ impl NoviceGenScreen {
         let mut root = SimpleQuestion::new();
         root.question = String::from("Закон никогда не был препятствием вашему персонажу?");
 
+        
+
         root.answers.push(SimpleQuestionAnswer::Result(
-            String::from("Несомненно")
+            String::from("Несомненно"), 
+            {
+                let mut ch = Character::new();
+                ch.class = CharacterClass::Rogue;
+                ch
+            }
         ));
         root.answers.push(SimpleQuestionAnswer::Result(
-            String::from("Мой персонаж предпочитает сохранять справедливость в мире")
+            String::from("Мой персонаж предпочитает сохранять справедливость в мире"),
+            Character::new_from_class(CharacterClass::Ranger)
         ));
 
         root
@@ -158,30 +199,38 @@ impl NoviceGenScreen {
 impl Screen for NoviceGenScreen {
     fn update(&mut self, ctx: &CtxRef, frame: &mut Frame<'_>) -> ScreenResult {
 
+        let mut res = ScreenResult::Ok;
+
         egui::CentralPanel::default().show(ctx, |ui| {
 
-
-           ui.add(egui::Label::new(self.question.question.as_str()).text_style(TextStyle::Heading));
-            ui.separator();
-
             let mut new_question = Option::<SimpleQuestion>::None;
+            ui.vertical_centered(|ui| {
+                ui.add(egui::Label::new(self.question.question.as_str()).text_style(TextStyle::Heading));
+                ui.separator();
 
-            for a in &self.question.answers {
-                match a {
-                    SimpleQuestionAnswer::NewQuestion(s, q) => {
-                        if ui.button(s.as_str()).clicked() {
-                            new_question = Option::Some(SimpleQuestion::clone(q));
-                        }
-                        ui.separator();
-                    }
-                    SimpleQuestionAnswer::Result(r) => {
-                        if ui.button(r.as_str()).clicked() {
 
+                for a in &self.question.answers {
+                    match a {
+                        SimpleQuestionAnswer::NewQuestion(s, q) => {
+                            if ui.button(s.as_str()).clicked() {
+                                new_question = Option::Some(SimpleQuestion::clone(q));
+                            }
+                            ui.separator();
                         }
-                        ui.separator();
+                        SimpleQuestionAnswer::Result(r, ch) => {
+                            if ui.button(r.as_str()).clicked() {
+                                res = ScreenResult::NextScreen(Box::new(
+                                    ClassShowScreen::new(ch.clone())
+                                ));
+                            }
+                            ui.separator();
+                        }
                     }
                 }
-            }
+            });
+
+
+            
 
             match new_question {
                 Option::Some(q) => {
@@ -193,7 +242,7 @@ impl Screen for NoviceGenScreen {
             }
         });
 
-        ScreenResult::Ok
+        res
     }
 }
 
@@ -228,11 +277,16 @@ impl Screen for GenerationTypeScreen {
 
 
         egui::CentralPanel::default().show(ctx, |ui| {
-            ui.button("Ручное создание (not worker)");
-            if ui.button("Генерация для новичка").clicked() {
-                res = ScreenResult::NextScreen(Box::new(NoviceGenScreen::default()));
-            }
-            ui.button("Рандомное безумие! (not worked)");
+            ui.vertical_centered(|ui| {
+                ui.button("Ручное создание (not worker)");
+                ui.separator();
+                if ui.button("Генерация для новичка").clicked() {
+                    res = ScreenResult::NextScreen(Box::new(NoviceGenScreen::default()));
+                }
+                ui.separator();
+                ui.button("Рандомное безумие! (not worked)");
+            });
+            
         });
 
         res
