@@ -101,7 +101,7 @@ impl Character {
                 res = String::from("Бард");
             }
             CharacterClass::Cleric => {
-                res = String::from("Клерик");
+                res = String::from("Жрец");
             }
             CharacterClass::Druid => {
                 res = String::from("Друид");

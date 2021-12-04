@@ -7,6 +7,7 @@ mod character;
 mod screen;
 mod main_screen;
 mod character_gen;
+mod class_overwiew;
 
 pub use app::TemplateApp;
 

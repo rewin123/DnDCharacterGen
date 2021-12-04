@@ -3,6 +3,7 @@ use eframe::epi::Frame;
 use crate::screen::*;
 use crate::character::*;
 use eframe::egui;
+use crate::class_overwiew::*;
 
 enum SimpleQuestionAnswer {
     NewQuestion(String, Box<SimpleQuestion>),
@@ -44,6 +45,9 @@ impl Screen for ClassShowScreen {
             ui.vertical_centered(|ui| {
                 ui.separator();
                 ui.label(format!("Вы {:?}", Character::get_class_name(&self.character)));
+
+                ui.separator();
+                ui.label(ClassOverview::get(&self.character.class));
 
                 ui.separator();
                 if ui.button("Далее").clicked() {
@@ -104,7 +108,7 @@ impl NoviceGenScreen {
 
         root.answers.push(SimpleQuestionAnswer::NewQuestion(
             String::from("Я не побоюсь выйти на бой лицом к лицу"),
-            Box::new(NoviceGenScreen::hide_question())
+            Box::new(NoviceGenScreen::warrior_question())
         ));
 
         root.answers.push(SimpleQuestionAnswer::NewQuestion(
@@ -115,6 +119,33 @@ impl NoviceGenScreen {
         root.answers.push(SimpleQuestionAnswer::NewQuestion(
             String::from("Враг умрет, не заметив моего присутсвия"),
             Box::new(NoviceGenScreen::hide_question())
+        ));
+
+        root
+    }
+
+    fn warrior_question() -> SimpleQuestion {
+        let mut root = SimpleQuestion::new();
+        root.question = String::from("Мой персонаж тяготеет к?");
+
+        root.answers.push(SimpleQuestionAnswer::Result(
+            String::from("Вкладыванию в битве всего себя, как эмоционально, так и физически"),
+            Character::new_from_class(CharacterClass::Barbarian)
+        ));
+
+        root.answers.push(SimpleQuestionAnswer::Result(
+            String::from("Выверенному стилю боя, построенному на стиле боя"),
+            Character::new_from_class(CharacterClass::Fighter)
+        ));
+
+        root.answers.push(SimpleQuestionAnswer::Result(
+            String::from("Глубокому пониманию своей внутренней энергии и духовному развитию"),
+            Character::new_from_class(CharacterClass::Monk)
+        ));
+        
+        root.answers.push(SimpleQuestionAnswer::Result(
+            String::from("Пониманию и единению с природой и природной энергией"),
+            Character::new_from_class(CharacterClass::Druid)
         ));
 
         root
