@@ -1,7 +1,6 @@
 use crate::screen::*;
 use crate::character::*;
 use eframe::{egui, epi};
-use rand::Rng;
 
 enum AbState {
     Init,
@@ -11,25 +10,27 @@ enum AbState {
 
 pub struct AutoSetAbilitiesScreen {
     charadcter : Character,
-    last_anim_time : std::time::Instant,
     drops : Vec<i32>,
     cubes : Vec<i32>,
     ability_place : Vec<AbilityType>,
     state : AbState,
-    rng : rand::rngs::ThreadRng
+    rng : oorandom::Rand32
 }
 
 impl AutoSetAbilitiesScreen {
     pub fn new(character : &Character) -> Self {
         Self {
             charadcter : character.clone(),
-            last_anim_time : std::time::Instant::now(),
             drops : vec![],
             cubes : vec![],
             ability_place : vec![],
             state : AbState::Init,
-            rng : rand::thread_rng()
+            rng : oorandom::Rand32::new(0)
         }
+    }
+
+    pub fn rand6(&mut self) -> i32 {
+        self.rng.rand_range(1..7) as i32
     }
 }
 
@@ -54,7 +55,7 @@ impl Screen for AutoSetAbilitiesScreen {
                                 self.state = AbState::SetDrops;
 
                                 while self.drops.len() < 6 {
-                                    let mut cubes = vec![self.rng.gen_range(1..7), self.rng.gen_range(1..7), self.rng.gen_range(1..7), self.rng.gen_range(1..7)];
+                                    let mut cubes = vec![self.rand6(), self.rand6(), self.rand6(), self.rand6()];
                                     cubes.sort_unstable();
                                     let value = cubes[1] + cubes[2] + cubes[3];
                                     self.drops.push(value);
