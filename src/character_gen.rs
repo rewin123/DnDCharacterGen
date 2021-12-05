@@ -42,18 +42,23 @@ impl Screen for ClassShowScreen {
         let mut res = ScreenResult::Ok;
 
         egui::CentralPanel::default().show(ctx, |ui| {
-            ui.vertical_centered(|ui| {
-                ui.separator();
-                ui.label(format!("Вы {:?}", Character::get_class_name(&self.character)));
-
-                ui.separator();
-                ui.label(ClassOverview::get(&self.character.class));
-
-                ui.separator();
-                if ui.button("Далее").clicked() {
-
-                }
+            egui::ScrollArea::vertical().show(ui, |ui| {
+                ui.vertical_centered(|ui| {
+                    ui.separator();
+                    ui.label(format!("Вы {:?}", Character::get_class_name(&self.character)));
+    
+                    ui.separator();
+                    ui.label(ClassOverview::get(&self.character.class));
+    
+                    ui.separator();
+                    if ui.button("Далее").clicked() {
+                        res = ScreenResult::NextScreen(
+                            Box::new(crate::race_select::RaceSelectScreen::new(&self.character))
+                        );
+                    }
+                });
             });
+            
         });
 
         res
@@ -184,9 +189,9 @@ impl NoviceGenScreen {
         let mut root = SimpleQuestion::new();
         root.question = String::from("Мой персонаж больше тягеет к ?");
 
-        root.answers.push(SimpleQuestionAnswer::NewQuestion(
+        root.answers.push(SimpleQuestionAnswer::Result(
             String::from("Использованию божественных сил"),
-            Box::new(NoviceGenScreen::hide_question())
+            Character::new_from_class(CharacterClass::Cleric)
         ));
 
         root.answers.push(SimpleQuestionAnswer::NewQuestion(
@@ -194,9 +199,9 @@ impl NoviceGenScreen {
             Box::new(NoviceGenScreen::magick_question())
         ));
 
-        root.answers.push(SimpleQuestionAnswer::NewQuestion(
+        root.answers.push(SimpleQuestionAnswer::Result(
             String::from("Честной воинской стали"),
-            Box::new(NoviceGenScreen::hide_question())
+            Character::new_from_class(CharacterClass::Ranger)
         ));
 
         root
@@ -309,13 +314,11 @@ impl Screen for GenerationTypeScreen {
 
         egui::CentralPanel::default().show(ctx, |ui| {
             ui.vertical_centered(|ui| {
-                ui.button("Ручное создание (not worker)");
                 ui.separator();
                 if ui.button("Генерация для новичка").clicked() {
                     res = ScreenResult::NextScreen(Box::new(NoviceGenScreen::default()));
                 }
                 ui.separator();
-                ui.button("Рандомное безумие! (not worked)");
             });
             
         });

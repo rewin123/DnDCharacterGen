@@ -1,17 +1,26 @@
 
+pub enum AbilityType {
+    Strength,
+    Dexterity,
+    Constitution,
+    Wisdom,
+    Intelligence,
+    Charisma
+}
+
 #[derive(Clone, Debug)]
 pub struct Ability {
-    value : i32
+    pub value : i32
 }
 
 #[derive(Clone, Debug)]
 pub struct AbilityBase {
-    strength : Ability,
-    dexterity : Ability,
-    constitution : Ability,
-    wisdom : Ability,
-    intelligence: Ability,
-    charisma : Ability
+    pub strength : Ability,
+    pub dexterity : Ability,
+    pub constitution : Ability,
+    pub wisdom : Ability,
+    pub intelligence: Ability,
+    pub charisma : Ability
 }
 
 #[derive(Clone, Debug)]
@@ -46,10 +55,30 @@ pub enum Race {
 }
 
 #[derive(Clone, Debug)]
+pub enum ExactRace {
+    MountainDwarf,
+    HillDwarf,
+    HighElf,
+    ForestElf,
+    DarkElf,
+    LightfootHalfling,
+    StoutHalfling,
+    Human,
+    Dragonborn,
+    ForestGnome,
+    RockGnome,
+    HalfElf,
+    HalfOrc,
+    Tiefling,
+    Undefined,
+}
+
+#[derive(Clone, Debug)]
 pub struct Character {
     pub abilities :  AbilityBase,
     pub class : CharacterClass,
     pub race : Race,
+    pub exact_race : ExactRace
 }
 
 impl Ability {
@@ -79,6 +108,7 @@ impl Character {
             abilities : AbilityBase::new(), 
             class : CharacterClass::Undefined,
             race : Race::Undefined,
+            exact_race : ExactRace::Undefined
         }
     }
 
@@ -87,7 +117,77 @@ impl Character {
             abilities : AbilityBase::new(),
             class,
             race : Race::Undefined,
+            exact_race : ExactRace::Undefined
         }
+    }
+
+    pub fn get_ability_buf(race : &ExactRace) -> AbilityBase {
+        let mut base = AbilityBase::new();
+
+        match race {
+            ExactRace::MountainDwarf => {
+                base.constitution.value = 2;
+                base.strength.value = 2;
+            }
+            ExactRace::HillDwarf => {
+                base.constitution.value = 2;
+                base.wisdom.value = 1;
+            }
+            ExactRace::HighElf => {
+                base.dexterity.value = 2;
+                base.intelligence.value = 1;
+            }
+            ExactRace::ForestElf => {
+                base.dexterity.value = 2;
+                base.wisdom.value = 1;
+            }
+            ExactRace::DarkElf => {
+                base.dexterity.value = 2;
+                base.charisma.value = 1;
+            }
+            ExactRace::LightfootHalfling => {
+                base.dexterity.value = 2;
+                base.charisma.value = 1;
+            }
+            ExactRace::StoutHalfling => {
+                base.dexterity.value = 2;
+                base.constitution.value = 1;
+            }
+            ExactRace::Human => {
+                base.charisma.value = 1;
+                base.constitution.value = 1;
+                base.dexterity.value = 1;
+                base.intelligence.value = 1;
+                base.strength.value = 1;
+                base.wisdom.value = 1;
+            }
+            ExactRace::Dragonborn => {
+                base.strength.value = 2;
+                base.charisma.value = 1;
+            }
+            ExactRace::ForestGnome => {
+                base.intelligence.value = 2;
+                base.dexterity.value = 1;
+            }
+            ExactRace::RockGnome => {
+                base.intelligence.value = 2;
+                base.constitution.value = 1;
+            }
+            ExactRace::HalfElf => {
+                base.charisma.value = 2;
+            }
+            ExactRace::HalfOrc => {
+                base.strength.value = 2;
+                base.constitution.value = 1;
+            }
+            ExactRace::Tiefling => {
+                base.intelligence.value = 1;
+                base.charisma.value = 2;
+            }
+            ExactRace::Undefined => {}
+        }
+
+        base
     }
 
     pub fn get_class_name(&self) -> String {
