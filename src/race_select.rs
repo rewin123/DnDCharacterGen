@@ -72,6 +72,16 @@ impl RaceSelectScreen {
             costs.push(RaceCost::make_cost(&race, &cost));
         }
 
+        costs.sort_by(|a, b| {
+            if a.cost > b.cost {
+                std::cmp::Ordering::Less
+            } else if a.cost == b.cost {
+                std::cmp::Ordering::Equal
+            } else {
+                std::cmp::Ordering::Greater
+            }
+        });
+
         Self {
             character : character.clone(),
             costs
@@ -88,11 +98,25 @@ impl Screen for RaceSelectScreen {
                 ui.vertical_centered(|ui| {
                     ui.label("Пришло время решить судьбу твоего появления в мире. Выбери частью какого народа ты будешь являться:");
                     ui.separator();
+                    ui.label(format!("Для каждой расы определена ее ценность указанная справа. Чем большее число указано справа, тем более полезная предложенная раса для выданного класса"));
                     ui.separator();
 
-                    for race_cost in &self.costs {
-                        ui.button(format!("{:?}", race_cost.race));
-                    }
+                    egui::Grid::new("race_select_grid").striped(true).show(ui, |ui| {
+                        ui.label("Раса");
+                        ui.label("Описание");
+                        ui.label("Полезность");
+                        ui.label("");
+                        ui.end_row();
+                        for race_cost in &self.costs {
+                            ui.label(format!("{:?}", race_cost.race));
+                            ui.label("");
+                            ui.label(format!("{}", race_cost.cost));
+                            ui.button("Выбрать");
+                            ui.end_row();
+                        }
+                    });
+
+                    
                 });
             });
         });
