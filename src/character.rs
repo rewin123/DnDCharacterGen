@@ -190,6 +190,57 @@ impl Character {
         base
     }
 
+    pub fn get_race_name(race : &ExactRace) -> String {
+
+        match race {
+            ExactRace::MountainDwarf => {
+                String::from("Горный дварф")
+            }
+            ExactRace::HillDwarf => {
+                String::from("Холмовой дварф")
+            }
+            ExactRace::HighElf => {
+                String::from("Высокий эльф")
+            }
+            ExactRace::ForestElf => {
+                String::from("Лесной эльф")
+            }
+            ExactRace::DarkElf => {
+                String::from("Темный эльф (Дроу)")
+            }
+            ExactRace::LightfootHalfling => {
+                String::from("Легконогий полурослик")
+            }
+            ExactRace::StoutHalfling => {
+                String::from("Коренастый полурослик")
+            }
+            ExactRace::Human => {
+                String::from("Человек")
+            }
+            ExactRace::Dragonborn => {
+                String::from("Драконорожденный")
+            }
+            ExactRace::ForestGnome => {
+                String::from("Лесной гном")
+            }
+            ExactRace::RockGnome => {
+                String::from("Скальный гном")
+            }
+            ExactRace::HalfElf => {
+                String::from("Полуэльф")
+            }
+            ExactRace::HalfOrc => {
+                String::from("Полуорк")
+            }
+            ExactRace::Tiefling => {
+                String::from("Тифлинг")
+            }
+            ExactRace::Undefined => {
+                String::from("Неизвестная раса")
+            }
+        }
+    }
+
     pub fn get_class_name(&self) -> String {
         let class = &self.class;
         let mut res = String::from("");
