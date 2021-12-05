@@ -9,6 +9,7 @@ mod main_screen;
 mod character_gen;
 mod class_overwiew;
 mod race_select;
+mod abilities_set_screen;
 
 // ----------------------------------------------------------------------------
 // When compiling for web:

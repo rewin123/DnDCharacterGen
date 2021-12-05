@@ -1,4 +1,5 @@
 
+#[derive(Clone, Debug)]
 pub enum AbilityType {
     Strength,
     Dexterity,
@@ -98,6 +99,29 @@ impl AbilityBase {
             constitution : Ability::new(0),
             charisma : Ability::new(0),
             wisdom : Ability::new(0)
+        }
+    }
+
+    pub fn get_by_type(&self, tp : &AbilityType) -> &Ability {
+        match tp {
+            AbilityType::Charisma => {
+                &self.charisma
+            }
+            AbilityType::Constitution => {
+                &self.constitution
+            }
+            AbilityType::Dexterity => {
+                &self.dexterity
+            }
+            AbilityType::Intelligence => {
+                &self.intelligence
+            }
+            AbilityType::Strength => {
+                &self.strength
+            }
+            AbilityType::Wisdom => {
+                &self.wisdom
+            }
         }
     }
 }

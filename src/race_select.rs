@@ -93,6 +93,8 @@ impl Screen for RaceSelectScreen {
     
     fn update(&mut self, ctx: &CtxRef, frame: &mut Frame<'_>) -> ScreenResult {
 
+        let mut res = ScreenResult::Ok;
+
         egui::CentralPanel::default().show(ctx, |ui| {
             egui::ScrollArea::vertical().show(ui, |ui| {
                 ui.vertical_centered(|ui| {
@@ -107,7 +109,12 @@ impl Screen for RaceSelectScreen {
                             ui.separator();
                             ui.label(SelectRaceDesc::get_race_desc(&race_cost.race));
                             ui.label(format!("Соотвествие классу {:?} составляет [{}] (больше - лучше)", self.character.get_class_name(), race_cost.cost));
-                            ui.button("Выбрать");
+                            if ui.button("Выбрать").clicked() {
+                                self.character.exact_race = race_cost.race.clone();
+                                res = ScreenResult::NextScreen(
+                                    Box::new(crate::abilities_set_screen::AutoSetAbilitiesScreen::new(&self.character))
+                                );
+                            }
                             ui.separator();
                         }
                     }
@@ -115,7 +122,7 @@ impl Screen for RaceSelectScreen {
             });
         });
 
-        ScreenResult::Ok
+        res
     }
 }
 
@@ -238,6 +245,113 @@ impl SelectRaceDesc {
             }
             CharacterClass::Wizard => {
                 res.push(AbilityType::Intelligence);
+            }
+            CharacterClass::Undefined => {
+            }
+        }
+
+        res
+    }
+
+    pub fn get_ability_order(class : &CharacterClass) -> Vec<AbilityType> {
+        let mut res = Vec::<AbilityType>::new();
+
+        match class {
+            CharacterClass::Barbarian => {
+                res.push(AbilityType::Strength);
+                res.push(AbilityType::Constitution);
+                res.push(AbilityType::Dexterity);
+                res.push(AbilityType::Charisma);
+                res.push(AbilityType::Wisdom);
+                res.push(AbilityType::Intelligence);
+            }
+            CharacterClass::Bard => {
+                res.push(AbilityType::Charisma);
+                res.push(AbilityType::Dexterity);
+                res.push(AbilityType::Constitution);
+                res.push(AbilityType::Strength);
+                res.push(AbilityType::Wisdom);
+                res.push(AbilityType::Intelligence);
+            }
+            CharacterClass::Cleric => {
+                res.push(AbilityType::Wisdom);
+                res.push(AbilityType::Constitution);
+                res.push(AbilityType::Charisma);
+                res.push(AbilityType::Dexterity);
+                res.push(AbilityType::Strength);
+                res.push(AbilityType::Intelligence);
+            }
+            CharacterClass::Druid => {
+                res.push(AbilityType::Wisdom);
+                res.push(AbilityType::Constitution);
+                res.push(AbilityType::Charisma);
+                res.push(AbilityType::Dexterity);
+                res.push(AbilityType::Strength);
+                res.push(AbilityType::Intelligence);
+            }
+            CharacterClass::Fighter => {
+                res.push(AbilityType::Strength);
+                res.push(AbilityType::Constitution);
+                res.push(AbilityType::Dexterity);
+                res.push(AbilityType::Wisdom);
+                res.push(AbilityType::Charisma);
+                res.push(AbilityType::Intelligence);
+            }
+            CharacterClass::Monk => {
+                res.push(AbilityType::Dexterity);
+                res.push(AbilityType::Wisdom);
+                res.push(AbilityType::Constitution);
+                res.push(AbilityType::Wisdom);
+                res.push(AbilityType::Charisma);
+                res.push(AbilityType::Intelligence);
+            }
+            CharacterClass::Paladin => {
+                res.push(AbilityType::Strength);
+                res.push(AbilityType::Charisma);
+                res.push(AbilityType::Constitution);
+                res.push(AbilityType::Dexterity);
+                res.push(AbilityType::Wisdom);
+                res.push(AbilityType::Intelligence);
+            }
+            CharacterClass::Ranger => {
+                res.push(AbilityType::Dexterity);
+                res.push(AbilityType::Wisdom);
+                res.push(AbilityType::Constitution);
+                res.push(AbilityType::Intelligence);
+                res.push(AbilityType::Charisma);
+                res.push(AbilityType::Strength);
+            }
+            CharacterClass::Rogue => { 
+                res.push(AbilityType::Dexterity);
+                res.push(AbilityType::Wisdom);
+                res.push(AbilityType::Constitution);
+                res.push(AbilityType::Intelligence);
+                res.push(AbilityType::Charisma);
+                res.push(AbilityType::Strength);
+            }
+            CharacterClass::Sorcerer => {
+                res.push(AbilityType::Charisma);
+                res.push(AbilityType::Intelligence);
+                res.push(AbilityType::Wisdom);
+                res.push(AbilityType::Constitution);
+                res.push(AbilityType::Dexterity);
+                res.push(AbilityType::Strength);
+            }
+            CharacterClass::Warlok => {
+                res.push(AbilityType::Charisma);
+                res.push(AbilityType::Intelligence);
+                res.push(AbilityType::Wisdom);
+                res.push(AbilityType::Constitution);
+                res.push(AbilityType::Dexterity);
+                res.push(AbilityType::Strength);
+            }
+            CharacterClass::Wizard => {
+                res.push(AbilityType::Intelligence);
+                res.push(AbilityType::Wisdom);
+                res.push(AbilityType::Constitution);
+                res.push(AbilityType::Dexterity);
+                res.push(AbilityType::Strength);
+                res.push(AbilityType::Charisma);
             }
             CharacterClass::Undefined => {
             }
