@@ -2,13 +2,14 @@
 #![cfg_attr(not(debug_assertions), deny(warnings))] // Forbid warnings in release builds
 #![warn(clippy::all, rust_2018_idioms)]
 
-mod app;
+pub mod start_window;
 mod character;
 mod screen;
 mod main_screen;
 mod character_gen;
-
-pub use app::TemplateApp;
+mod class_overwiew;
+mod race_select;
+mod abilities_set_screen;
 
 // ----------------------------------------------------------------------------
 // When compiling for web:
@@ -23,7 +24,7 @@ use eframe::wasm_bindgen::{self, prelude::*};
 #[cfg(target_arch = "wasm32")]
 #[wasm_bindgen]
 pub fn start(canvas_id: &str) -> Result<(), eframe::wasm_bindgen::JsValue> {
-    let app = TemplateApp::default();
+    let app = start_window::TemplateApp::default();
     eframe::start_web(canvas_id, Box::new(app))
 }
 
