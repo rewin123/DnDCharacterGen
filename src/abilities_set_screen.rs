@@ -19,13 +19,15 @@ pub struct AutoSetAbilitiesScreen {
 
 impl AutoSetAbilitiesScreen {
     pub fn new(character : &Character) -> Self {
-        Self {
-            charadcter : character.clone(),
-            drops : vec![],
-            cubes : vec![],
-            ability_place : vec![],
-            state : AbState::Init,
-            rng : oorandom::Rand32::new(0)
+        unsafe {
+            Self {
+                charadcter: character.clone(),
+                drops: vec![],
+                cubes: vec![],
+                ability_place: vec![],
+                state: AbState::Init,
+                rng: oorandom::Rand32::new(crate::start_window::frames_count.clone())
+            }
         }
     }
 

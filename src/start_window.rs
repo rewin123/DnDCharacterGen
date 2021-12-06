@@ -2,6 +2,7 @@ use eframe::{egui, epi};
 use crate::screen::*;
 use crate::main_screen::*;
 
+pub static mut frames_count : u64 = 0_u64;
 
 pub struct TemplateApp {
     screen : Box<dyn Screen>
@@ -30,7 +31,9 @@ impl epi::App for TemplateApp {
     /// Called each time the UI needs repainting, which may be many times per second.
     /// Put your widgets into a `SidePanel`, `TopPanel`, `CentralPanel`, `Window` or `Area`.
     fn update(&mut self, ctx: &egui::CtxRef, frame: &mut epi::Frame<'_>) {
-
+        unsafe {
+            frames_count += 1_u64;
+        }
         self.screen.update(ctx, frame);
     }
 }

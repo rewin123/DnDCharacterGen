@@ -10,6 +10,7 @@ pub enum ScreenResult {
     ClearScreenStack(Box<dyn Screen>)
 }
 
+
 pub trait Screen {
     fn update(&mut self, ctx: &egui::CtxRef, frame: &mut epi::Frame<'_>) -> ScreenResult;
 }

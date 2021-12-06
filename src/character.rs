@@ -82,6 +82,7 @@ pub struct Character {
     pub exact_race : ExactRace
 }
 
+
 impl Ability {
     pub fn new(value : i32) -> Self {
         Self {
